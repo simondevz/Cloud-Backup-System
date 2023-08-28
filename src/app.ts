@@ -6,14 +6,14 @@ import { createClient } from "redis";
 import assert from "assert";
 import cors from "cors";
 
-import downloadHandler, { addDownloadHeaders } from "./handlers/download";
 import signupHandler from "./handlers/signup";
-import uploadHandler from "./handlers/upload";
 import loginHandler from "./handlers/login";
-import newfolderHandler from "./handlers/newfolder";
 import { databaseType } from "./database";
-import apiCall from "./apiCalls";
+import { apiCallType } from "./apiCalls";
 
+const uploadHandler = require("./handlers/upload");
+const downloadHandler = require("./handlers/download");
+const newfolderHandler = require("./handlers/newfolder");
 require("dotenv").config();
 
 declare module "express-session" {
@@ -23,10 +23,8 @@ declare module "express-session" {
   }
 }
 
-function makeApp(database: databaseType) {
-  const access_token = process.env.DROPBOX_ACCESS_TOKEN;
+function makeApp(database: databaseType, apiCall: apiCallType) {
   const app: Application = express();
-
   let redisClient = createClient({ url: process.env.REDIS_URL });
   redisClient.connect().catch(console.error);
 
@@ -65,8 +63,22 @@ function makeApp(database: databaseType) {
     next();
   }
 
+  function addDownloadHeaders(req: Request, res: Response, next: any) {
+    const { file } = req.query;
+    if (!file) {
+      res.status(400).send({ message: "no file specified" });
+      return;
+    }
+
+    res.header("Content-Type", "application/octet-stream");
+    res.header("Content-Disposition", `attachment; filename=${file}`);
+    next();
+  }
+
   app.get("/", (req: Request, res: Response) => {
-    res.send({ message: "hello world" }); // Should return user's folders & files if logged in
+    res.send({
+      message: "Hi, there please login at /login or register at /signup",
+    });
   });
 
   // Create folder

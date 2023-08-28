@@ -12,9 +12,9 @@ const db = pgp(
 );
 
 export interface databaseType {
-  getUser: any;
-  createUser: any;
-  savePath: any;
+  getUser: (email: string) => Promise<any>;
+  createUser: (user: any) => Promise<any>;
+  savePath: (path: string, id: number) => Promise<void>;
 }
 
 const database = {

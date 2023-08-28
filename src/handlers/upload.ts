@@ -106,4 +106,4 @@ const uploadHandler = (req: Request, res: Response, apiCall: apiCallType) => {
   });
 };
 
-export default uploadHandler;
+module.exports = uploadHandler;

@@ -17,10 +17,7 @@ const signupHandler = async (
   const password: string | null = req.body?.password;
 
   // Check user credential
-  if (
-    (!email || !firstname || !lastname || !password) &&
-    emailRegEx.test(email)
-  ) {
+  if (!(email && firstname && lastname && password && emailRegEx.test(email))) {
     res.status(400).send({ message: "Missing or Invalid credentials" });
     return;
   }
