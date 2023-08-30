@@ -1,0 +1,32 @@
+services:
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+  api:
+    build: ./
+    ports:
+      - 3000:3000
+    environment:
+      - REDIS_URL=redis://redis
+      - PORT=3000
+      - PG_USERNAME=postgres
+      - PG_PASSWORD=postgres
+      - PG_HOST=db
+      - PG_DB=risevest
+      - SECRET=NKHOMKfbvbfnbdjdhfhm388ryiudfjk!@$%^nmtbgbdnfdbksk
+      - DROPBOX_ACCESS_TOKEN=sl.Bk14MTnGFizgiKjdKpADPf52Hd25OkYd77Jbk0ywVzCt3gnZ-12J272IEYw-Hmo41BdQhOmGxTsFmb2tz8LYKYfvlDjO5IknMrYObDo2pQhBYfSgaMXG8eF9H-Tz5F3cE0Jx6xCu9N3yDqaulbL_QoY
+      - DROPBOX_REFRESH_TOKEN=qhX383h14pMAAAAAAAAAAawM46-0U4UodVU5efbDvTb7eys1Ww-n3fKWeTMBTFSz
+      - DROPBOX_ID=hrysgy71orlg7j2
+      - DROPBOX_SECRET=fzzqda7e9ma5xgg
+  db:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - risevest_db:/var/lib/postgresql/data
+volumes:
+  risevest_db:

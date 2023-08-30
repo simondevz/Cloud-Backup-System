@@ -2,7 +2,12 @@ import axios from "axios";
 const dotenv = require("dotenv");
 
 export interface apiCallType {
-  uploadFile: (userId: string, file: any, path: string | null) => Promise<any>;
+  uploadFile: (
+    userId: string,
+    file: any,
+    filename: string | null,
+    path: string | null
+  ) => Promise<any>;
   uploadFileStart: (file: any) => Promise<any>;
   downloadFile: (userId: number, file: any, path: string) => Promise<any>;
 
@@ -69,7 +74,7 @@ const apiCall = {
     } catch (error: any) {
       const message = error?.response?.data?.error_summary;
 
-      if (message === "expired_access_token/") {
+      if (message.includes("expired_access_token")) {
         await getNewToken();
         await apiCall.createFolder(userId, path);
         return;
@@ -79,15 +84,18 @@ const apiCall = {
     }
   },
 
-  uploadFile: async (userId: string, file: any, path: string | null) => {
+  uploadFile: async (
+    userId: string,
+    file: any,
+    filename: string,
+    path: string | null
+  ) => {
     try {
       let headers = {
         Authorization: `Bearer ${access_token}`,
         "Content-Type": "application/octet-stream",
         "Dropbox-API-Arg": JSON.stringify({
-          path: `/user_${userId}/${path ? path + "/" : ""}${
-            file.originalFilename
-          }`,
+          path: `/user_${userId}/${path ? path + "/" : ""}${filename}`,
           mode: { ".tag": "add" },
           autorename: true,
           mute: false,
@@ -105,9 +113,9 @@ const apiCall = {
     } catch (error: any) {
       const message = error?.response?.data?.error_summary;
 
-      if (message === "expired_access_token/") {
+      if (message.includes("expired_access_token")) {
         await getNewToken();
-        await apiCall.uploadFile(userId, file, path);
+        await apiCall.uploadFile(userId, file, filename, path);
         return;
       }
 
@@ -133,7 +141,7 @@ const apiCall = {
     } catch (error: any) {
       const message = error?.response?.data?.error_summary;
 
-      if (message === "expired_access_token/") {
+      if (message.includes("expired_access_token")) {
         await getNewToken();
         await apiCall.uploadFileStart(file);
         return;
@@ -163,7 +171,7 @@ const apiCall = {
     } catch (error: any) {
       const message = error?.response?.data?.error_summary;
 
-      if (message === "expired_access_token/") {
+      if (message.includes("expired_access_token")) {
         await getNewToken();
         await apiCall.uploadFileAppend(file, session_id, offset);
         return;
@@ -206,7 +214,7 @@ const apiCall = {
     } catch (error: any) {
       const message = error?.response?.data?.error_summary;
 
-      if (message === "expired_access_token/") {
+      if (message.includes("expired_access_token")) {
         await getNewToken();
         await apiCall.uploadFileFinish(userId, file, session_id, offset, path);
         return;
@@ -233,7 +241,7 @@ const apiCall = {
     } catch (error: any) {
       const message = error?.response?.data?.error_summary;
 
-      if (message === "expired_access_token/") {
+      if (message.includes("expired_access_token")) {
         await getNewToken();
         await apiCall.downloadFile(userId, file, path);
         return;

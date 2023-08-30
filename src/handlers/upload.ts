@@ -7,6 +7,8 @@ const uploadHandler = (req: Request, res: Response, apiCall: apiCallType) => {
   const form = formidable({});
   const user = req.session.user;
 
+  console.log(form);
+
   form.parse(req, (err, fields, files) => {
     if (err) {
       res.sendStatus(500);
@@ -15,6 +17,12 @@ const uploadHandler = (req: Request, res: Response, apiCall: apiCallType) => {
 
     const fileSize = files.data[0].size;
     const path = fields?.path[0];
+    const filename = files?.data[0]?.originalFilename;
+
+    if (!filename) {
+      res.status(400).send({ message: "no files sent" });
+    }
+
     if (fileSize > 200 * 1024 * 1024) {
       res.status(403).send({ message: "file too large" });
       return;
@@ -29,7 +37,7 @@ const uploadHandler = (req: Request, res: Response, apiCall: apiCallType) => {
       // Handle when files are less than 150mb
       if (fileSize < 150 * 1024 * 1024) {
         try {
-          const data = await apiCall.uploadFile(user.id, file, path);
+          const data = await apiCall.uploadFile(user.id, file, filename, path);
           res.status(200).send({ data });
           return;
         } catch (error: any) {

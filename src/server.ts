@@ -1,10 +1,10 @@
-import dotenv from "dotenv";
+const dotenv = require("dotenv");
 import database from "./database";
 import apiCall from "./apiCalls";
 const makeApp = require("./app");
 
 dotenv.config();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 3000;
 
 const app = makeApp(database, apiCall);
 app.listen(port, () => {
