@@ -16,7 +16,7 @@ const uploadHandler = (req: Request, res: Response, apiCall: apiCallType) => {
     }
 
     const fileSize = files.data[0].size;
-    const path = fields?.path[0];
+    const path = fields?.path?.[0] || null;
     const filename = files?.data[0]?.originalFilename;
 
     if (!filename) {
