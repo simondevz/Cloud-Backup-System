@@ -3,8 +3,6 @@ import session from "express-session";
 import bodyParser from "body-parser";
 import RedisStore from "connect-redis";
 import { createClient } from "redis";
-import assert from "assert";
-import cors from "cors";
 
 import signupHandler from "./handlers/signup";
 import loginHandler from "./handlers/login";
@@ -27,6 +25,9 @@ function makeApp(database: databaseType, apiCall: apiCallType) {
   const app: Application = express();
   let redisClient = createClient({ url: process.env.REDIS_URL });
   redisClient.connect().catch(console.error);
+  redisClient.on("error", (error) => {
+    console.log(error);
+  });
 
   let redisStore = new RedisStore({
     client: redisClient,
@@ -75,10 +76,13 @@ function makeApp(database: databaseType, apiCall: apiCallType) {
     next();
   }
 
-  app.get("/", (req: Request, res: Response) => {
+  app.get("/", isAuthenticated, (req: Request, res: Response) => {
+    console.log(req.body);
     res.send({
-      message: "Hi, there please login at /login or register at /signup",
+      message:
+        "Hi, there. Get started by uploading at /uploads, creating new folder at /newfolder or downloading at /downloads",
     });
+    return;
   });
 
   // Create folder
@@ -106,6 +110,10 @@ function makeApp(database: databaseType, apiCall: apiCallType) {
 
   app.post("/signup", (req: Request, res: Response) => {
     signupHandler(req, res, database, apiCall);
+  });
+
+  app.all("*", (req: Request, res: Response) => {
+    res.sendStatus(404);
   });
 
   return app;
