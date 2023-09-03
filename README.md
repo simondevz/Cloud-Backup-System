@@ -1,6 +1,6 @@
-# Cloud-Management-System
+# Cloud-Backup-System
 
-I designed and developed a Cloud Management System using Node.js, Express, and TypeScript. Implemented secure user registration and authentication functionalities,
+I designed and developed a Cloud Backup System using Node.js, Express, and TypeScript. Implemented secure user registration and authentication functionalities,
 enhancing system integrity.
 
 I used Redis for efficient session management, ensuring seamless user experience and data persistence in this project. And used PostgreSQL
